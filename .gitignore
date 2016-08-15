@@ -243,3 +243,5 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/WebFileBrowser/WebFileBrowser/bower_components
+/WebFileBrowser/WebFileBrowser/Scripts
