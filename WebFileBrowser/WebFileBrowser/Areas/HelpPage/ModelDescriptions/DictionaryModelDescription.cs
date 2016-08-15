@@ -1,0 +1,6 @@
+namespace WebFileBrowser.Areas.HelpPage.ModelDescriptions
+{
+    public class DictionaryModelDescription : KeyValuePairModelDescription
+    {
+    }
+}
