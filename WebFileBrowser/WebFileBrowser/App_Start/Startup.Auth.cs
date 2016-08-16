@@ -10,6 +10,8 @@ using Microsoft.Owin.Security.OAuth;
 using Owin;
 using WebFileBrowser.Providers;
 using WebFileBrowser.Models;
+using System.Web.Http;
+using Autofac;
 
 namespace WebFileBrowser
 {
@@ -45,25 +47,6 @@ namespace WebFileBrowser
 
             // Включение использования приложением маркера-носителя для аутентификации пользователей
             app.UseOAuthBearerTokens(OAuthOptions);
-
-            // Раскомментируйте приведенные далее строки, чтобы включить вход с помощью сторонних поставщиков входа
-            //app.UseMicrosoftAccountAuthentication(
-            //    clientId: "",
-            //    clientSecret: "");
-
-            //app.UseTwitterAuthentication(
-            //    consumerKey: "",
-            //    consumerSecret: "");
-
-            //app.UseFacebookAuthentication(
-            //    appId: "",
-            //    appSecret: "");
-
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
         }
     }
 }

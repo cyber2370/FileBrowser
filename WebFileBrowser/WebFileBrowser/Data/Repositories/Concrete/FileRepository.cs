@@ -10,7 +10,7 @@ namespace WebFileBrowser.Data.Repositories.Concrete
 {
     class FileRepository : IFileRepository
     {
-        public async Task<DirectoryModel> GetDir(string path)
+        public DirectoryModel GetDir(string path)
         {
             var directory = new DirectoryModel();
 
@@ -29,10 +29,15 @@ namespace WebFileBrowser.Data.Repositories.Concrete
             }
             catch (Exception ex)
             {
-
+                throw;
             }
 
             return directory;
+        }
+
+        public List<string> GetLogicalDrives()
+        {
+            return Directory.GetLogicalDrives().ToList();
         }
     }
 }
