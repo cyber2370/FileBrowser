@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Permissions;
+using System.Web;
 using System.Web.Http;
 using WebFileBrowser.Models;
 
@@ -10,19 +13,22 @@ namespace WebFileBrowser.Controllers
 {
     public class NavigationController : ApiController
     {
-        public IHttpActionResult GetProduct(int id)
+        public IHttpActionResult GetDrives()
         {
-            var directory = new DirectoryModel
+            try
             {
-                
-            };
-
-            if (directory == null)
+                return Ok(Directory.GetLogicalDrives());
+            }
+            catch (Exception ex)
             {
                 return NotFound();
             }
 
-            return Ok(directory);
+        }
+        
+        public IHttpActionResult GetDir()
+        {
+            return Ok();
         }
     }
 }

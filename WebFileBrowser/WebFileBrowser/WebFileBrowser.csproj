@@ -237,6 +237,8 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NavigationController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Data\Repositories\Concrete\FileRepository.cs" />
+    <Compile Include="Data\Repositories\IFileRepository.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
