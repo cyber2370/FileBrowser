@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 using WebFileBrowser.Models;
 
@@ -10,13 +9,18 @@ namespace WebFileBrowser.Data.Repositories.Concrete
 {
     class FileRepository : IFileRepository
     {
-        public DirectoryModel GetDir(string path)
+        public DirectoryModel GetDir(string drive, string path)
         {
-            var directory = new DirectoryModel();
+            var directory = new DirectoryModel
+            {
+                DriveLetter = drive,
+                FullPath = path
+            };
 
             try
             {
-                var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
+
+                var files = Directory.GetFiles(drive + path, "*.*", SearchOption.AllDirectories).ToList();
                 directory.Files = files.Select(file => new FileModel
                 {
                     Name = file.Split('/').Last(),
@@ -25,6 +29,8 @@ namespace WebFileBrowser.Data.Repositories.Concrete
                     FileSize = new FileInfo(file).Length,
                     MimeType = MimeMapping.GetMimeMapping(file)
                 }).ToList();
+
+                directory.Directories = Directory.GetDirectories(drive + path, "*.*", SearchOption.AllDirectories).ToList();
 
             }
             catch (Exception ex)

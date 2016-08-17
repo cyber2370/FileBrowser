@@ -1,1 +1,70 @@
-﻿
+﻿@model WebFileBrowser.Models.DirectoryModel
+
+@{
+    ViewBag.Title = "Welcome";
+}
+
+<div id="logicalDrivesDiv"></div>
+<div id="pathDiv"></div>
+
+<input id="driveLetter" value="D:\">
+<input id="dirPath" value="Downloads\">
+<button id="getDirButton">try get dir</button>
+
+@section scripts
+{
+    <script type="text/javascript">
+    $(function () {
+        getLogicalDrives();
+
+        var $logicalDrivesDiv = $('#logicalDrivesDiv');
+        var $pathDiv = $('#pathDiv');
+
+        var $driveLetterInput = $('#driveLetter');
+        var $dirPathInput = $('#dirPath');
+        var $getDirButton = $('#getDirButton');
+
+
+        $getDirButton.click(function () {
+            var driveLetter = $driveLetterInput.val();
+            var dirPath = $dirPathInput.val();
+
+            getDirByPath(driveLetter, dirPath);
+        });
+    });
+
+    function getLogicalDrives() {
+        $.ajax({
+            url: 'http://localhost:54284/api/navigation/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                alert(data);
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function getDirByPath(driveLetter, dirPath) {
+        var dir = {
+            FullPath: dirPath,
+            DriveLetter: driveLetter
+        };
+
+        $.ajax({
+            url: 'http://localhost:54284/api/navigation/',
+            type: 'POST',
+            data: JSON.stringify(dir),
+            contentType: "application/json;charset=utf-8",
+            success: function (directory) {
+                alert("In directory '" + directory.DriveLetter + directory.FullPath + "' you have " + directory.Files.length + " files");
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+    </script>
+}

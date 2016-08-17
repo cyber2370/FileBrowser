@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Permissions;
-using System.Web;
 using System.Web.Http;
 using WebFileBrowser.Data.Repositories;
 using WebFileBrowser.Data.Repositories.Concrete;
@@ -22,25 +15,35 @@ namespace WebFileBrowser.Controllers
             _fileRepository = new FileRepository();
         }
 
-        public IHttpActionResult Get()
+        /// <summary>
+        /// Get logical drives
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IHttpActionResult GetLogicalDrives()
         {
             try
             {
                 var drives = _fileRepository.GetLogicalDrives();
+
                 return Ok(drives);
             }
             catch (Exception ex)
             {
-                return NotFound();
+                return Ok(ex);
             }
 
         }
         
-        public IHttpActionResult Get(string id)
+        
+        /// Get dir
+        [HttpPost]
+        public IHttpActionResult GetDir([FromBody]DirectoryModel model)
         {
             try
             {
-                var dir = _fileRepository.GetDir(id);
+                var dir = _fileRepository.GetDir(model.DriveLetter, model.FullPath);
+
                 return Ok(dir);
             }
             catch (Exception ex)
