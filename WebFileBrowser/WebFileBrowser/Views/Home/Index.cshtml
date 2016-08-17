@@ -59,7 +59,34 @@
             data: JSON.stringify(dir),
             contentType: "application/json;charset=utf-8",
             success: function (directory) {
-                alert("In directory '" + directory.DriveLetter + directory.FullPath + "' you have " + directory.Files.length + " files");
+                var files = directory.Files;
+
+                var Mb = 1024;
+                var Mb10 = 10 * Mb;
+                var Mb100 = 100 * Mb;
+                var Gb1 = 1000 * Mb;
+
+                var less10Mb = files.filter(function (file) {
+                    return file.FileSize <= Mb10;
+                });
+
+                var bigger10MbAndLess100Gb = files.filter(function (file) {
+                    return file.FileSize > Mb10 && file.FileSize <= Mb100;
+                });
+
+                var bigger100MbAndLess1Gb = files.filter(function (file) {
+                    return file.FileSize >= Mb100 && file.FileSize <= Gb1;
+                });
+
+                var bigger1Gb = files.filter(function (file) {
+                    return file.FileSize > Gb1;
+                });
+
+                alert("In directory '" + directory.DriveLetter + directory.FullPath + "' you have " + directory.Files.length + " files.\n\n"
+                    + "< 10 Mb : " + less10Mb.length + " files;\n"
+                    + "10 Mb ---- 100 Mb: " + bigger10MbAndLess100Gb.length + " files;\n"
+                    + "100 Mb ---- 1 Gb: " + bigger100MbAndLess1Gb.length + " files;\n"
+                    + "> 1 Gb : " + bigger1Gb.length + " files;\n");
             },
             error: function (x, y, z) {
                 alert(x + '\n' + y + '\n' + z);
