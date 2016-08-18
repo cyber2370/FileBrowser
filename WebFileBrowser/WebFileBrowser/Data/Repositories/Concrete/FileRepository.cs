@@ -19,18 +19,17 @@ namespace WebFileBrowser.Data.Repositories.Concrete
 
             try
             {
-
-                var files = Directory.GetFiles(drive + path, "*.*", SearchOption.AllDirectories).ToList();
+                var files = Directory.GetFiles(drive + path, "*.*", SearchOption.TopDirectoryOnly).ToList();
                 directory.Files = files.Select(file => new FileModel
                 {
-                    Name = file.Split('/').Last(),
+                    Name = file.Split('/', '\\').Last(),
                     Exstension = file.Split('.').Last(),
-                    Path = file,
+                    Path = Path.GetPathRoot(file),
                     FileSize = new FileInfo(file).Length,
                     MimeType = MimeMapping.GetMimeMapping(file)
                 }).ToList();
 
-                directory.Directories = Directory.GetDirectories(drive + path, "*.*", SearchOption.AllDirectories).ToList();
+                directory.Directories = Directory.GetDirectories(drive + path, "*.*", SearchOption.TopDirectoryOnly).ToList();
 
             }
             catch (Exception ex)

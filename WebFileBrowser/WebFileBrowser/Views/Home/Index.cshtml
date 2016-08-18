@@ -4,34 +4,82 @@
     ViewBag.Title = "Welcome";
 }
 
-<div id="logicalDrivesDiv"></div>
-<div id="pathDiv"></div>
+<div id="currentPathDiv">
 
-<input id="driveLetter" value="D:\">
-<input id="dirPath" value="Downloads\">
+</div>
+
+<div id="logicalDrivesDiv">
+    <p>
+        <select size="5" multiple id="diskLetterSelect">
+            <option disabled selected>--- Выберите диск ---</option>
+        </select>
+    </p>
+</div>
+
+<div id="pathDiv">
+    <p>
+        <select size="5" multiple id="dirPathSelect">
+            <option disabled selected>--- Выберите папку ---</option>
+        </select>
+    </p>
+</div>
+
+
+<p>
+    <div id="filesDiv"></div>
+</p>
+
 <button id="getDirButton">try get dir</button>
 
 @section scripts
 {
-    <script type="text/javascript">
+<script type="text/javascript">
     $(function () {
-        getLogicalDrives();
+        var $logicalDrivesDiv;
+        var $pathDiv;
+        var $filesDiv;
 
-        var $logicalDrivesDiv = $('#logicalDrivesDiv');
-        var $pathDiv = $('#pathDiv');
+        var $driveLetterSelect;
+        var $dirPathSelect;
+        var $showDirInfoButton;
 
-        var $driveLetterInput = $('#driveLetter');
-        var $dirPathInput = $('#dirPath');
-        var $getDirButton = $('#getDirButton');
+        var driveLetter;
+        var logicalDrives;
+        var directory;
 
+        initViews();
+        loadData();
+    });
+
+    function initViews() {
+        $logicalDrivesDiv = $('#logicalDrivesDiv');
+        $pathDiv = $('#pathDiv');
+        $filesDiv = $('#filesDiv');
+
+        $driveLetterSelect = $('#diskLetterSelect');
+        $dirPathSelect = $('#dirPathSelect');
+        $getDirButton = $('#getDirButton');
+
+        $driveLetterSelect.change(function () {
+            driveLetter = $driveLetterSelect.val();
+
+            getDirByPath(driveLetter, "\\");
+        });
+
+        $dirPathSelect.change(function () {
+            var path = $dirPathSelect.val();
+
+            getDirByPath(driveLetter, path);
+        });
 
         $getDirButton.click(function () {
-            var driveLetter = $driveLetterInput.val();
-            var dirPath = $dirPathInput.val();
-
-            getDirByPath(driveLetter, dirPath);
+            showDirectoryInfo();
         });
-    });
+    }
+
+    function loadData() {
+        getLogicalDrives();
+    }
 
     function getLogicalDrives() {
         $.ajax({
@@ -39,7 +87,10 @@
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-                alert(data);
+                logicalDrives = data;
+                clearSelect($driveLetterSelect);
+                clearSelect($dirPathSelect);
+                fillSelect($driveLetterSelect, logicalDrives);
             },
             error: function (x, y, z) {
                 alert(x + '\n' + y + '\n' + z);
@@ -49,8 +100,8 @@
 
     function getDirByPath(driveLetter, dirPath) {
         var dir = {
-            FullPath: dirPath,
-            DriveLetter: driveLetter
+            FullPath: dirPath[0].replace(driveLetter[0], ''),
+            DriveLetter: driveLetter[0]
         };
 
         $.ajax({
@@ -58,40 +109,76 @@
             type: 'POST',
             data: JSON.stringify(dir),
             contentType: "application/json;charset=utf-8",
-            success: function (directory) {
-                var files = directory.Files;
+            success: function (data) {
+                directory = data;
+                clearSelect($dirPathSelect);
+                fillSelect($dirPathSelect, directory.Directories);
 
-                var Mb = 1024;
-                var Mb10 = 10 * Mb;
-                var Mb100 = 100 * Mb;
-                var Gb1 = 1000 * Mb;
-
-                var less10Mb = files.filter(function (file) {
-                    return file.FileSize <= Mb10;
-                });
-
-                var bigger10MbAndLess100Gb = files.filter(function (file) {
-                    return file.FileSize > Mb10 && file.FileSize <= Mb100;
-                });
-
-                var bigger100MbAndLess1Gb = files.filter(function (file) {
-                    return file.FileSize >= Mb100 && file.FileSize <= Gb1;
-                });
-
-                var bigger1Gb = files.filter(function (file) {
-                    return file.FileSize > Gb1;
-                });
-
-                alert("In directory '" + directory.DriveLetter + directory.FullPath + "' you have " + directory.Files.length + " files.\n\n"
-                    + "< 10 Mb : " + less10Mb.length + " files;\n"
-                    + "10 Mb ---- 100 Mb: " + bigger10MbAndLess100Gb.length + " files;\n"
-                    + "100 Mb ---- 1 Gb: " + bigger100MbAndLess1Gb.length + " files;\n"
-                    + "> 1 Gb : " + bigger1Gb.length + " files;\n");
+                clearDiv();
+                fillFilesDiv($filesDiv, directory.Files);
             },
             error: function (x, y, z) {
                 alert(x + '\n' + y + '\n' + z);
             }
         });
     }
-    </script>
+
+    function fillSelect($select, array) {
+        $.each(array, function (key, value) {
+            $select
+                .append($("<option></option>")
+                    .attr("value", value)
+                    .addClass('custom')
+                    .text(value));
+        });
+    }
+
+    function clearSelect($select) {
+        $('.custom', $select).remove();
+    }
+
+    function clearDiv($div) {
+        $('ul', $div).remove();
+    }
+
+    function fillFilesDiv($div, files) {
+        $div.append($('<ul></ul>'));
+        $.each(files, function (key, value) {
+            $('ul', $div)
+                .append($("<li></li>")
+                    .text(value.Name));
+        });
+    }
+
+    function showDirectoryInfo() {
+        var files = directory.Files;
+
+        var Mb = 1024;
+        var Mb10 = 10 * Mb;
+        var Mb100 = 100 * Mb;
+        var Gb1 = 1000 * Mb;
+
+        var less10Mb = files.filter(function (file) {
+            return file.FileSize <= Mb10;
+        });
+
+        var bigger10MbAndLess100Gb = files.filter(function (file) {
+            return file.FileSize > Mb10 && file.FileSize <= Mb100;
+        });
+
+        var bigger100MbAndLess1Gb = files.filter(function (file) {
+            return file.FileSize >= Mb100 && file.FileSize <= Gb1;
+        });
+
+        var bigger1Gb = files.filter(function (file) {
+            return file.FileSize > Gb1;
+        });
+
+        alert("In directory '" + directory.DriveLetter + directory.FullPath + "' you have " + directory.Files.length + " files.\n\n"
+            + "< 10 Mb : " + less10Mb.length + " files;\n"
+            + "10 Mb ---- 100 Mb: " + bigger10MbAndLess100Gb.length + " files;\n"
+            + "100 Mb ---- 1 Gb: " + bigger100MbAndLess1Gb.length + " files;\n"
+            + "> 1 Gb : " + bigger1Gb.length + " files;\n");
+    }
+</script>
 }
