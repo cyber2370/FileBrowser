@@ -16,12 +16,7 @@
     </p>
 </div>
 
-<div id="pathDiv">
-    <p>
-        <select size="5" multiple id="dirPathSelect">
-            <option disabled selected>--- Выберите папку ---</option>
-        </select>
-    </p>
+<div id="directoriesDiv">
 </div>
 
 
@@ -29,156 +24,13 @@
     <div id="filesDiv"></div>
 </p>
 
-<button id="getDirButton">try get dir</button>
+<button id="showDirInfoButton">try get dir</button>
 
 @section scripts
 {
 <script type="text/javascript">
-    $(function () {
-        var $logicalDrivesDiv;
-        var $pathDiv;
-        var $filesDiv;
+    var view = new Views.Navigation.Index();
 
-        var $driveLetterSelect;
-        var $dirPathSelect;
-        var $showDirInfoButton;
-
-        var driveLetter;
-        var logicalDrives;
-        var directory;
-
-        initViews();
-        loadData();
-    });
-
-    function initViews() {
-        $logicalDrivesDiv = $('#logicalDrivesDiv');
-        $pathDiv = $('#pathDiv');
-        $filesDiv = $('#filesDiv');
-
-        $driveLetterSelect = $('#diskLetterSelect');
-        $dirPathSelect = $('#dirPathSelect');
-        $getDirButton = $('#getDirButton');
-
-        $driveLetterSelect.change(function () {
-            driveLetter = $driveLetterSelect.val();
-
-            getDirByPath(driveLetter, "\\");
-        });
-
-        $dirPathSelect.change(function () {
-            var path = $dirPathSelect.val();
-
-            getDirByPath(driveLetter, path);
-        });
-
-        $getDirButton.click(function () {
-            showDirectoryInfo();
-        });
-    }
-
-    function loadData() {
-        getLogicalDrives();
-    }
-
-    function getLogicalDrives() {
-        $.ajax({
-            url: 'http://localhost:54284/api/navigation/',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                logicalDrives = data;
-                clearSelect($driveLetterSelect);
-                clearSelect($dirPathSelect);
-                fillSelect($driveLetterSelect, logicalDrives);
-            },
-            error: function (x, y, z) {
-                alert(x + '\n' + y + '\n' + z);
-            }
-        });
-    }
-
-    function getDirByPath(driveLetter, dirPath) {
-        var dir = {
-            FullPath: dirPath[0].replace(driveLetter[0], ''),
-            DriveLetter: driveLetter[0]
-        };
-
-        $.ajax({
-            url: 'http://localhost:54284/api/navigation/',
-            type: 'POST',
-            data: JSON.stringify(dir),
-            contentType: "application/json;charset=utf-8",
-            success: function (data) {
-                directory = data;
-                clearSelect($dirPathSelect);
-                fillSelect($dirPathSelect, directory.Directories);
-
-                clearDiv();
-                fillFilesDiv($filesDiv, directory.Files);
-            },
-            error: function (x, y, z) {
-                alert(x + '\n' + y + '\n' + z);
-            }
-        });
-    }
-
-    function fillSelect($select, array) {
-        $.each(array, function (key, value) {
-            $select
-                .append($("<option></option>")
-                    .attr("value", value)
-                    .addClass('custom')
-                    .text(value));
-        });
-    }
-
-    function clearSelect($select) {
-        $('.custom', $select).remove();
-    }
-
-    function clearDiv($div) {
-        $('ul', $div).remove();
-    }
-
-    function fillFilesDiv($div, files) {
-        $div.append($('<ul></ul>'));
-        $.each(files, function (key, value) {
-            $('ul', $div)
-                .append($("<li></li>")
-                    .text(value.Name));
-        });
-    }
-
-    function showDirectoryInfo() {
-        var files = directory.Files;
-
-        var Mb = 1024;
-        var Mb10 = 10 * Mb;
-        var Mb100 = 100 * Mb;
-        var Gb1 = 1000 * Mb;
-
-        var less10Mb = files.filter(function (file) {
-            return file.FileSize <= Mb10;
-        });
-
-        var bigger10MbAndLess100Gb = files.filter(function (file) {
-            return file.FileSize > Mb10 && file.FileSize <= Mb100;
-        });
-
-        var bigger100MbAndLess1Gb = files.filter(function (file) {
-            return file.FileSize >= Mb100 && file.FileSize <= Gb1;
-        });
-
-        var bigger1Gb = files.filter(function (file) {
-            return file.FileSize > Gb1;
-        });
-
-        alert("In directory '" + directory.DriveLetter + directory.FullPath + "' you have " + directory.Files.length + " files.\n\n"
-            + "< 10 Mb : " + less10Mb.length + " files;\n"
-            + "10 Mb ---- 100 Mb: " + bigger10MbAndLess100Gb.length + " files;\n"
-            + "100 Mb ---- 1 Gb: " + bigger100MbAndLess1Gb.length + " files;\n"
-            + "> 1 Gb : " + bigger1Gb.length + " files;\n");
-    }
+    view.InitView();
 </script>
 }
