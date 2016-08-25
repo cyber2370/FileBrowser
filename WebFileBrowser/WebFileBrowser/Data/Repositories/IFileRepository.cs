@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using WebFileBrowser.Models;
+using WebFileBrowser.Models.NavigationModels;
 
 namespace WebFileBrowser.Data.Repositories
 {
     public interface IFileRepository
     {
         List<string> GetLogicalDrives();
-        DirectoryModel GetDir(string drive, string path);
+        DirectoryModel GetDir(string path);
     }
 }

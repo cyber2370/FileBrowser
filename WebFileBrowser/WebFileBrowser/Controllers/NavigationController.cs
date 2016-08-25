@@ -2,7 +2,7 @@
 using System.Web.Http;
 using WebFileBrowser.Data.Repositories;
 using WebFileBrowser.Data.Repositories.Concrete;
-using WebFileBrowser.Models;
+using WebFileBrowser.Models.NavigationModels;
 
 namespace WebFileBrowser.Controllers
 {
@@ -22,17 +22,9 @@ namespace WebFileBrowser.Controllers
         [HttpGet]
         public IHttpActionResult GetLogicalDrives()
         {
-            try
-            {
-                var drives = _fileRepository.GetLogicalDrives();
+            var drives = _fileRepository.GetLogicalDrives();
 
-                return Ok(drives);
-            }
-            catch (Exception ex)
-            {
-                return Ok(ex);
-            }
-
+            return Ok(drives);            
         }
         
         
@@ -42,13 +34,13 @@ namespace WebFileBrowser.Controllers
         {
             try
             {
-                var dir = _fileRepository.GetDir(model.DriveLetter, model.FullPath);
+                var dir = _fileRepository.GetDir(model.FullPath);
 
                 return Ok(dir);
             }
             catch (Exception ex)
             {
-                return Ok(ex);
+                return InternalServerError(ex);
             }
         }
     }

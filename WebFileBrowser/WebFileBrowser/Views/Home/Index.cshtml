@@ -1,30 +1,39 @@
-﻿@model WebFileBrowser.Models.DirectoryModel
-
-@{
+﻿@{
     ViewBag.Title = "Welcome";
 }
 
-<div id="currentPathDiv">
+<table class="table table-bordered" width="100%">
+    <thead>
+        <tr>
+            <td>Less 10Mb</td>
+            <td>10Mb-50Mb</td>
+            <td>More 100Mb</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td id="moreThanOneHundren">1233</td>
+            <td id="tenFifty">222</td>
+            <td id="lessThanTen">11</td>
+        </tr>
+    </tbody>
+</table>
 
+<div>
+    <br />
+    <b>Current Path: </b> <span id="currentPath"></span>
+    <br/>
 </div>
 
-<div id="logicalDrivesDiv">
-    <p>
-        <select size="5" multiple id="diskLetterSelect">
-            <option disabled selected>--- Выберите диск ---</option>
-        </select>
-    </p>
+<div>
+    <select size="5" multiple id="diskLetterSelect">
+        <option disabled selected>--- Выберите диск ---</option>
+    </select>
 </div>
 
-<div id="directoriesDiv">
+<div id="directoryInfoDiv">
+
 </div>
-
-
-<p>
-    <div id="filesDiv"></div>
-</p>
-
-<button id="showDirInfoButton">try get dir</button>
 
 @section scripts
 {
