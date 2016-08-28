@@ -6,9 +6,17 @@ namespace WebFileBrowser.Models.NavigationModels
 {
     public class DirectoryModel
     {
-        public string Name { get; private set; }
+        public DirectoryModel()
+        {
 
-        public string DriveLetter { get; private set; }
+        }
+
+        public DirectoryModel(string path)
+        {
+            FullPath = path;
+        }
+
+        public string Name { get; private set; }
 
         private string _fullPath;
         public string FullPath
@@ -22,15 +30,12 @@ namespace WebFileBrowser.Models.NavigationModels
                 _fullPath = value;
                 
                 Name = Path.GetDirectoryName(_fullPath);
-                DriveLetter = _fullPath.Split('\\').First();
             }
         }
 
-        public IList<DirectoryModel> Directories { get; set; }
+        public IList<string> Files { get; set; }
 
-        public IList<FileModel> InsertedFiles { get; set; }
-
-        public IList<FileModel> Files { get; set; }
+        public IList<string> Directories { get; set; }
 
     }
 }

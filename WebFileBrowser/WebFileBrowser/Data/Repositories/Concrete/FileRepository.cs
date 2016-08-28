@@ -2,50 +2,42 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using WebFileBrowser.Models.NavigationModels;
 
 namespace WebFileBrowser.Data.Repositories.Concrete
 {
     class FileRepository : IFileRepository
     {
-        public DirectoryModel GetDir(string path)
-        {
-            var directory = new DirectoryModel
-            {
-                FullPath = path
-            };
 
-            try
-            {
-                var files = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly).ToList();
-                directory.Files = files.Select(file => new FileModel
-                {
-                    FullPath = file
-                }).ToList();
-
-                var allFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
-                directory.InsertedFiles = files.Select(file => new FileModel
-                {
-                    FullPath = file
-                }).ToList();
-
-                directory.Directories = Directory.GetDirectories(path, "*.*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryModel { FullPath = x}).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-
-            return directory;
-        }
-
-        public List<string> GetLogicalDrives()
+        public IList<string> GetLogicalDrives()
         {
             return Directory.GetLogicalDrives().ToList();
         }
 
-        private static IEnumerable<FileInfo> EnumerateAllFiles(DirectoryInfo directoryInfo)
+        public DirectoryModel GetDir(string path)
+        {
+            var directory = new DirectoryModel(path);
+
+            directory.Files = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly).Select(d => d.Replace(path, "")).ToList();
+
+            directory.Directories = Directory.GetDirectories(path, "*.*", SearchOption.TopDirectoryOnly).Select(f => f.Replace(path, "")).ToList();
+
+            return directory;
+        }
+
+        public IList<FileModel> GetAllFiles(string path)
+        {
+            try
+            {
+                return Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Select(x => new FileModel { FullPath = x.Replace(path, "") }).ToList();
+            } catch (Exception)
+            {
+                var files = EnumerateAllFiles(new DirectoryInfo(path)).ToList();
+                return files.Select(f => new FileModel { FullPath = f.FullName }).ToList();
+            }
+        }
+
+        private IEnumerable<FileInfo> EnumerateAllFiles(DirectoryInfo directoryInfo)
         {
             FileInfo[] listOfFiles;
             try

@@ -5,7 +5,10 @@ namespace WebFileBrowser.Data.Repositories
 {
     public interface IFileRepository
     {
-        List<string> GetLogicalDrives();
+        IList<string> GetLogicalDrives();
+
         DirectoryModel GetDir(string path);
+
+        IList<FileModel> GetAllFiles(string path);
     }
 }
