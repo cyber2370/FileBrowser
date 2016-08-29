@@ -25,15 +25,15 @@ namespace WebFileBrowser.Data.Repositories.Concrete
             return directory;
         }
 
-        public IList<FileModel> GetAllFiles(string path)
+        public IList<long> GetInsertedFilesSizes(string path)
         {
             try
             {
-                return Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Select(x => new FileModel { FullPath = x.Replace(path, "") }).ToList();
+                return Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Select(f => Convert.ToInt64(f.Length)).ToList();
             } catch (Exception)
             {
                 var files = EnumerateAllFiles(new DirectoryInfo(path)).ToList();
-                return files.Select(f => new FileModel { FullPath = f.FullName }).ToList();
+                return files.Select(f => f.Length).ToList(); 
             }
         }
 

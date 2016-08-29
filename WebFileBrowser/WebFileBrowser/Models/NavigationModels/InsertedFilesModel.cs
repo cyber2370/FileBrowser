@@ -6,6 +6,6 @@ namespace WebFileBrowser.Models.NavigationModels
     {
         public string RootFolderPath { get; set; }
 
-        public IList<FileModel> Files { get; set; }
+        public IList<long> FilesSizes { get; set; }
     }
 }

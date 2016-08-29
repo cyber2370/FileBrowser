@@ -54,7 +54,7 @@ namespace WebFileBrowser.Controllers
         {
             try
             {
-                model.Files = _fileRepository.GetAllFiles(model.RootFolderPath);
+                model.FilesSizes = _fileRepository.GetInsertedFilesSizes(model.RootFolderPath);
 
                 return Ok(model);
             }

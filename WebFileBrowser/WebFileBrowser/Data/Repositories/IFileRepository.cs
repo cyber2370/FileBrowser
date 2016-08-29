@@ -9,6 +9,6 @@ namespace WebFileBrowser.Data.Repositories
 
         DirectoryModel GetDir(string path);
 
-        IList<FileModel> GetAllFiles(string path);
+        IList<long> GetInsertedFilesSizes(string path);
     }
 }
